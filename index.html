@@ -1,11 +1,26 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <script src="phaser.js"></script>
+    <meta charset="UTF-8" />
+    <title>Star Pilot</title>
+  <script type="text/javascript" src="phaser.js"></script>
+  <script type="text/javascript" src="GameScene.js"></script>
+  <script type="text/javascript" src="Gameover.js"></script>
+  <script type="text/javascript" src="GameWon.js"></script>
+
+
+
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
 
-    <script>
+<script type="text/javascript">
+
+
     var config = {
         type: Phaser.AUTO,
         width: 800,
@@ -17,137 +32,13 @@
                 debug: false
             }
         },
-        scene: {
-            preload: preload,
-            create: create,
-            update: update
-        }
+
+        scene: [GameScene, Gameover, GameWon]
     };
-    var player;
-    var shoot;
-    var gameOver = false;
+
     var game = new Phaser.Game(config);
-    var keys;
-    var enemy;
-    var enemyhealth = 10;
-    var score = 0;
-    var enemySpawn = false;
 
-    function preload ()
-    {
-        this.load.image('sky', 'assets/background.png');
-        this.load.image('ship','assets/spaceShip.png');
-        this.load.image('bul','assets/bullet.png');
-        this.load.image('enemy','assets/enemy.png');
-        this.load.image('explosion', 'assets/explosion.png');
-    }
-
-    function create ()
-    {
-
-        scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#250' });
-        this.add.image(400, 300, 'sky');
-
-        player = this.physics.add.image(400, 550, 'ship').setDisplaySize(100,90);
-
-        //player hits walls
-        player.setCollideWorldBounds(true);
-        //allow keys
-        cursors = this.input.keyboard.createCursorKeys();
-        keys = this.input.keyboard.addKeys('A,W,S,D');
-
-        //add groups
-        shoot = this.physics.add.group();
-        enemy = this.physics.add.group();
-        //spawn first enemy
-        for(var i = 0; i <= 5; i++){
-          enemy.create(Phaser.Math.Between(20,780), 50,'enemy');
-        }
-        enemy.setVelocityY(300);
-        this.physics.add.overlap(player, enemy, hitBomb, null, this);
-        this.physics.add.overlap(enemy,shoot,hitEnemy);
-
-        console.log(player.x +" " + player.y);
-    }
-    function hitBomb (player, enemy)
-    {
-        this.physics.pause();
-        this.add.image(player.x,player.y,'explosion');
-        gameOver = true;
-    }
-    function hitEnemy(enemy, shoot){
-      if(enemyhealth <= 0){
-        enemy.destroy();
-        enemySpawn = false;
-
-      }else{
-        enemyhealth = enemyhealth -1;
-      }
-      shoot.destroy();
-
-
-
-    }
-    function update ()
-    {
-
-        if (gameOver)
-        {
-            return;
-        }
-        if (keys.A.isDown)
-        {
-            player.setVelocityX(-600);
-        }
-        else if (keys.D.isDown)
-        {
-            player.setVelocityX(600);
-        }
-        else
-        {
-            player.setVelocityX(0);
-        }
-        if (cursors.space.isDown){
-          shoot.create(player.x, player.y-55, 'bul');
-          shoot.setVelocityY(-1000);
-        }
-        if (enemyhealth <= 0 && !enemySpawn){
-          enemy.create(Phaser.Math.Between(20,780), 50,'enemy');
-          enemySpawn = true;
-
-          enemyhealth = 10;
-          score += 1;
-          scoreText.setText('Score: ' + score);
-
-        }
-
-        enemy.children.iterate(function (child) {
-        //bit found in code that works, no idea what it does. ..
-        if (child == undefined)
-            return;
-            if (child.y > 600)  {
-              child.destroy();
-              enemy.create(Phaser.Math.Between(20,780), 50,'enemy');
-            }
-          })
-        shoot.children.iterate(function (child) {
-          //bit found in code that works, no idea what it does. ..
-        if (child == undefined)
-            return;
-            if (child.y < 0)  {
-              child.destroy();
-            }
-          })
-
-
-
-        enemy.setVelocityY(300);
-
-
-
-    }
-
-    </script>
+</script>
 
 </body>
 </html>
